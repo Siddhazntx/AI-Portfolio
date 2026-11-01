@@ -1,6 +1,9 @@
 import type { ChatRequest } from '../types';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+// Use relative URL by default (/api/chat) for same-origin Vercel deployment and local Vite proxy.
+// VITE_API_BASE_URL can optionally override if explicitly provided.
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
+const CHAT_ENDPOINT = `${API_BASE_URL}/api/chat`;
 
 export async function sendMessage(question: string): Promise<string> {
   let fullText = '';
@@ -16,7 +19,7 @@ export async function sendMessageStream(
 ): Promise<string> {
   const payload: ChatRequest = { question };
 
-  const response = await fetch(`${API_BASE_URL}/chat`, {
+  const response = await fetch(CHAT_ENDPOINT, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
